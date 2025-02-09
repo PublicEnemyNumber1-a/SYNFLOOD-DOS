@@ -1,74 +1,77 @@
-
-This tool is designed to perform a SYN flood attack on a specified target IP and port. It utilizes randomized source IP addresses, proxy servers, and optional TLS encryption to enhance its effectiveness. The tool also includes rate limiting to control the attack intensity.
+The SYNFlood tool is a multi-threaded SYN flood attack script designed to overwhelm a target server by sending a large number of SYN packets. This tool can utilize proxies to mask the source IP address, making it more difficult for detection systems to identify the attack. It also supports randomization of TCP flags and can simulate SSL/TLS handshakes to mimic legitimate connection attempts.
 
 ## Features
-- **SYN Flood Attack**: Generates and sends SYN packets to the target.
-- **Proxy Support**: Uses SOCKS5 proxies to obfuscate the source IP.
-- **Rate Limiting**: Ensures controlled request rates.
-- **TLS Support**: Optionally encrypts packets using SSL/TLS.
-- **Logging**: Records sent packets for tracking.
-- **Multi-threading**: Allows concurrent execution for efficiency.
-- **Proxy Validation**: Checks for working proxies before use.
+- Multi-threaded SYN flood attack
+- Proxy support for IP masking
+- Randomized TCP flags for stealth
+- SSL/TLS handshake simulation
+- Rate limiting to control packet sending frequency
+- Logging of sent packets
+- Statistics display for monitoring attack progress
 
-## Dependencies
-- Python 3
-- `argparse`
-- `random`
-- `socket`
-- `logging`
-- `ssl`
-- `os`
-- `requests`
-- `scapy`
-- `threading`
-- `concurrent.futures`
-- `socks`
+## Requirements
+- Python 3.x
+- Required Python libraries:
+  - `scapy`
+  - `requests`
+  - `socks`
+  - `concurrent.futures`
+  - `argparse`
+  
+## Installation
+
+### Step 1: Install Python
+Ensure you have Python 3.x installed on your system. You can download it from the official [Python website](https://www.python.org/downloads/).
+
+### Step 2: Install Required Libraries
+You can install the required libraries using `pip`. Open your terminal or command prompt and run the following commands:
+
+```bash
+pip install scapy requests pysocks
+```
+
+### Step 3: Download the SYNFlood Tool
+You can download the SYNFlood tool from the repository or copy the code into a Python file named `SYNFLOOD.py`.
+
+### Step 4: Make the Script Executable (Optional)
+If you are using a Unix-based system (Linux, macOS), you can make the script executable by running:
+
+```bash
+chmod +x SYNFLOOD.py
+```
 
 ## Usage
-### 1. Loading Proxies
-The tool can load proxies from a file. Proxies should be formatted as one per line.
-```python
-proxies = load_proxies_from_file("proxies.txt")
-valid_proxies = filter_working_proxies(proxies)
+
+### Command-Line Interface
+To run the SYNFlood tool, use the following command format:
+
+```bash
+python SYNFLOOD.py <target_url> [-p <port>] [-t <threads>] [-n <packets>] [--rate <rate>] [--proxies <proxies_file>]
 ```
 
-### 2. Initializing the Attack
-```python
-syn_flooder = SYNFlood(target_ip="192.168.1.1", target_port=80, rate_limit=100, proxies=valid_proxies, use_tls=False)
-syn_flooder.run_flood(packets_per_iteration=10)
-```
+### Parameters
+- `<target_url>`: The target URL to resolve to IP addresses.
+- `-p`, `--port`: The target port (default: 80).
+- `-t`, `--threads`: Number of threads to use for the attack (default: 100).
+- `-n`, `--packets`: Number of SYN packets to send per thread iteration (default: 100).
+- `--rate`: Rate limit per source IP (SYN packets per second, default: 10).
+- `--proxies`: Path to the file containing proxies (one per line).
 
-### 3. Monitoring the Attack
-```python
-print(f"Packets sent: {syn_flooder.get_packet_count()}")
-```
-
-### 4. Enabling TLS Encryption
-```python
-syn_flooder.set_tls(True)
-```
-
-## Rate Limiter
-The tool includes a rate limiter to prevent overwhelming a network.
-```python
-rate_limiter = RateLimiter(limit=100)
-if rate_limiter.allow_request("192.168.1.1"):
-    print("Request allowed")
-```
-
-## Proxy Handling
-The tool integrates SOCKS5 proxies and validates them before use.
-```python
-proxy_list = load_proxies_from_file("proxies.txt")
-valid_proxies = filter_working_proxies(proxy_list)
+### Example Command
+```bash
+python SYNFLOOD.py example.com -p 80 -t 200 -n 50 --rate 5 --proxies proxies.txt
 ```
 
 ## Logging
-Logs SYN packets sent with source and destination IPs.
-```plaintext
-2024-02-05 12:00:00 - INFO - SYN packet sent from 192.168.1.100 to 192.168.1.1:80
-```
+The tool logs all sent SYN packets to a file named `syn_flood.log`. You can check this file for details about the packets sent during the attack.
 
-## Security Disclaimer
-This tool is for educational and security research purposes only. Unauthorized use is illegal and unethical.
+## Statistics Display
+The tool provides real-time statistics on the number of SYN packets sent and the rate of packets per second. This information is displayed in the terminal during the attack.
 
+## Important Notes
+- **Ethical Use**: This tool is intended for educational purposes and should only be used in a controlled environment with permission from the target. Unauthorized use of this tool against any network or system is illegal and unethical.
+- **Firewall and Security**: Be aware that using this tool may trigger security alerts and could lead to legal consequences. Always ensure you have permission to test the target system.
+- **Performance**: The effectiveness of the attack may vary based on the target's network configuration and security measures in place.
+
+## Conclusion
+The SYNFlood tool is a powerful utility for simulating SYN flood attacks for educational and testing purposes. By following the installation and usage instructions, you can effectively utilize this tool while adhering to ethical guidelines. Always remember to use such tools responsibly and legally.
