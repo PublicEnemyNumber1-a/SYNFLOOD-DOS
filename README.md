@@ -1,4 +1,4 @@
-# Detailed Documentation of DDoS Attack Tool (Version 3.0)
+
 
 ## Overview
 
